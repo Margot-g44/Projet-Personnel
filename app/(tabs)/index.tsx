@@ -21,8 +21,8 @@ export default function HomeScreen() {
           On a le droit de rêver, sans même rien dans les poches
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">
+      <ThemedView style={styles.subtitleContainer}>
+        <ThemedText type="subtitle">
           Loïc Nottet
         </ThemedText>
       </ThemedView>
@@ -35,6 +35,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    fontWeight: "bold",
+  },
+  subtitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    fontStyle: "italic",
   },
   stepContainer: {
     gap: 8,
