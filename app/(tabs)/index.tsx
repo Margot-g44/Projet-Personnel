@@ -17,7 +17,7 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Bienvenue dans l'appli bien-être de Margot</ThemedText>
+        <ThemedText type="title">Welcome dans l'appli bien-être de Margot</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
