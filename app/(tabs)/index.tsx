@@ -6,6 +6,14 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 export default function HomeScreen() {
+  const today = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
+  const dateFormatee = today.toLocaleDateString("fr-FR", options);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -21,10 +29,12 @@ export default function HomeScreen() {
           On a le droit de rêver, sans même rien dans les poches
         </ThemedText>
       </ThemedView>
+
       <ThemedView style={styles.subtitleContainer}>
-        <ThemedText type="subtitle">
-          Loïc Nottet
-        </ThemedText>
+        <ThemedText type="subtitle">Loïc Nottet</ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">{dateFormatee}</ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
