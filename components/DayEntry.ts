@@ -1,7 +1,9 @@
+import DayEntryType from "./DayEntryType";
+
 export default class {
-  constructor(public period: boolean, public sleptWell: boolean) {}
+  constructor(public period: DayEntryType, public sleptWell: DayEntryType) {}
 
   public format(): string {
-    return `Period: ${this.period} / sleptWell: ${this.sleptWell}`;
+    return `Period: ${this.period.name} / sleptWell: ${this.sleptWell.name}`;
   }
 }
