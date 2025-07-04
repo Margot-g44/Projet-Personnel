@@ -14,14 +14,18 @@ export default function Calendrier() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    
     color: "#808080",
     bottom: -90,
     left: -35,
     position: "absolute",
   },
   titleContainer: {
-    flexDirection: "row",
+    flex:1, // aligner le titre Calendrier en haut et le centrer 
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 50,
     gap: 8,
+
   },
 });
