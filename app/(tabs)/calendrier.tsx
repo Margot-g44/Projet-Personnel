@@ -1,10 +1,10 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useState } from "react";
-import { Button, StyleSheet } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { TextInput } from "react-native-gesture-handler";
-import { View } from "react-native-reanimated/lib/typescript/Animated";
+
 
 export default function Calendrier() {
   const [selectedDate, setselectedDate] = useState(""); // création d'un état avec useState pour stocker la date sélectionnée par l'utilisateur
@@ -49,6 +49,7 @@ export default function Calendrier() {
         }}
       />
       <ThemedText>{selectedDate}</ThemedText>
+      {contenuFormulaire}
     </ThemedView>
   );
 }
