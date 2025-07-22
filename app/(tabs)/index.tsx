@@ -1,9 +1,10 @@
 import { Image } from "expo-image";
-import { StyleSheet } from "react-native";
+import { Button, StyleSheet } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const today = new Date();
@@ -13,6 +14,7 @@ export default function HomeScreen() {
     year: "numeric",
   };
   const dateFormatee = today.toLocaleDateString("fr-FR", options);
+  const router = useRouter();
 
   return (
     <ParallaxScrollView
@@ -26,14 +28,15 @@ export default function HomeScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">
-          On a le droit de rêver, sans même rien dans les poches
+          Bienvenue dans ton appli bien-être ! 
         </ThemedText>
       </ThemedView>
 
       <ThemedView style={styles.subtitleContainer}>
-        <ThemedText type="subtitle">Loïc Nottet</ThemedText>
+        <ThemedText type="subtitle">Renseigne ton profil afin de pouvoir bénéficier de l'app</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.titleContainer}>
+      <Button title="Créer ton profil" onPress={() => router.push('/profil-formulaire')} />
+        <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">{dateFormatee}</ThemedText>
       </ThemedView>
     </ParallaxScrollView>
