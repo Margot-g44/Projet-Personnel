@@ -1,47 +1,41 @@
-import { ThemedText } from "@/components/ThemedText"; // il faut importer les éléments dont on a besoin sur notre page
+import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import ThoughtsEditor from "@/components/ThoughtsEditor";
 import { StyleSheet } from "react-native";
 
 export const screenOptions = {
   title: "Journal",
-}; 
+};
 
 export default function Journal() {
-  // il faut exporter la fonction Profil pour qu'elle soit accessible dans l'application
   return (
-    // il faut un retour de cette fonction avec le titre de la page
-    <ThemedView style={styles.titleContainer}>
+    <ThemedView style={styles.container}>
+      {/* Titre de la page */}
       <ThemedText type="title">
         Bienvenue dans votre journal personnel !
       </ThemedText>
-    </ThemedView> //
+
+      {/* Citation du jour */}
+      <ThemedText type="default" style={styles.quote}>
+        🌱 Citation du jour : "La vie est belle"
+      </ThemedText>
+
+      {/* Zone pour écrire ses pensées */}
+      <ThoughtsEditor />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    fontWeight: "bold",
+    padding: 20,
+    justifyContent: "flex-start",
+    backgroundColor: "#fff",
   },
-  subtitleContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
+  quote: {
+    fontSize: 16,
     fontStyle: "italic",
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+    marginVertical: 20,
   },
 });
