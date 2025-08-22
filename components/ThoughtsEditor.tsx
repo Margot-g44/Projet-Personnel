@@ -1,24 +1,27 @@
 import React, { useState } from "react";
 import { Button, StyleSheet, TextInput, View } from "react-native";
 
-export default function ThoughtsEditor() {
-  // state pour stocker la pensée en cours
-  const [thought, setThought] = useState("");
+type ThoughtsEditorProps = {
+  onSave: (text: string) => void;
+};
 
-  // fonction pour "sauvegarder" la pensée (ici juste un console.log pour l'instant)
+export default function ThoughtsEditor({ onSave }: ThoughtsEditorProps) {
+  const [text, setText] = useState("");
+
   const handleSave = () => {
-    console.log("Pensée enregistrée :", thought);
-    // plus tard tu pourras stocker ça dans AsyncStorage ou une base
-    setThought(""); // on vide la zone de texte après la sauvegarde
+    if (text.trim().length > 0) {
+      onSave(text);
+      setText(""); // reset après sauvegarde
+    }
   };
 
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.textInput}
-        placeholder="Écris tes pensées ici..."
-        value={thought}
-        onChangeText={setThought}
+        style={styles.input}
+        placeholder="Écris tes pensées..."
+        value={text}
+        onChangeText={setText}
         multiline
       />
       <Button title="Sauvegarder" onPress={handleSave} />
@@ -27,19 +30,14 @@ export default function ThoughtsEditor() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 16,
-    padding: 12,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 12,
-  },
-  textInput: {
-    height: 120,
-    borderColor: "#ccc",
+  container: { marginBottom: 20 },
+  input: {
     borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
-    marginBottom: 12,
-    textAlignVertical: "top", // pour que le texte commence en haut
+    marginBottom: 10,
+    fontSize: 16,
+    minHeight: 60,
   },
 });
