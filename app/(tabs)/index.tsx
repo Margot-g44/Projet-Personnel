@@ -36,12 +36,10 @@ const AnimatedTitle = () => {
         }),
       ])
     ).start();
-  }, []);
+  }, [opacity]);
 
   return (
-    <Animated.Text style={[styles.title, { opacity }]}>
-      Bloom 🌸
-    </Animated.Text>
+    <Animated.Text style={[styles.title, { opacity }]}>Bloom 🌸</Animated.Text>
   );
 };
 
@@ -55,9 +53,11 @@ const FadeInQuote = ({ text }: { text: string }) => {
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [opacity]);
 
-  return <Animated.Text style={[styles.quote, { opacity }]}>{text}</Animated.Text>;
+  return (
+    <Animated.Text style={[styles.quote, { opacity }]}>{text}</Animated.Text>
+  );
 };
 
 export default function HomeScreen() {
@@ -79,7 +79,8 @@ export default function HomeScreen() {
         {/* Description encadrée */}
         <View style={styles.descriptionBox}>
           <ThemedText type="default" style={styles.description}>
-            Note tes émotions, explore tes pensées et découvre des moments de calme chaque jour.
+            Note tes émotions, explore tes pensées et découvre des moments de
+            calme chaque jour.
           </ThemedText>
         </View>
 
@@ -137,3 +138,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export function Index() {
+  return (
+    <ThemedView>
+      <AnimatedTitle />
+    </ThemedView>
+  );
+}

@@ -1,72 +1,148 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useState } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import { openDatabase } from "expo-sqlite";
+import { useEffect, useState } from "react";
+import { Button, StyleSheet, TextInput, View } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { TextInput } from "react-native-gesture-handler";
 
+declare module "expo-sqlite" {
+  export function openDatabase(name: string): any;
+}
 
-export default function Calendrier() {
-  const [selectedDate, setselectedDate] = useState(""); // création d'un état avec useState pour stocker la date sélectionnée par l'utilisateur
-  // ex de fonctionnement : const [valeurActuelle, fonctionPourModifierValeur] = useState(valeurInitiale);
-  // valeurActuelle -> C’est la donnée que tu veux stocker (ex. : une date, un objet, une liste, etc.)
-  // fonctionPourModifierValeur -> Tu l’utilises pour mettre à jour cette donnée quand quelque chose change
-  // valeurInitiale -> Ce que cette donnée vaut au départ, avant toute interaction
+const db = openDatabase("bienetre.db");
 
-  const [historiqueEmotions, setHistoriqueEmotions] = useState({}); // création d'un état pour stocker l'historique des dates sélectionnées
-  // historique -> C’est un tableau qui va contenir toutes les dates que l’utilisateur a sélectionnées
+const Calendrier = () => {
+  const [selectedDate, setSelectedDate] = useState("");
   const [humeur, setHumeur] = useState("");
   const [commentaire, setCommentaire] = useState("");
-  let contenuFormulaire = null; // variable pour contenir tout le bloc d'affichage du formulaire
+  const [historiqueEmotions, setHistoriqueEmotions] = useState<{
+    [key: string]: { humeur: string; commentaire: string };
+  }>({});
 
-  if (selectedDate) {
-    contenuFormulaire = (
-      <View> 
-      <TextInput placeholder="Ton humeur du jour" value={humeur} onChangeText={setHumeur} />
-      <TextInput placeholder="Indique un commentaire" value={commentaire} onChangeText={setCommentaire} />
-      <Button title="Enregistrer" onPress={() => {
-        setHistoriqueEmotions((historiqueExistant) => ({
-          ...historiqueExistant,
-          [selectedDate]: {
-            humeur: humeur,
-            commentaire: commentaire,
-          },
-        }));
+  // Crée la table si elle n'existe pas
+  useEffect(() => {
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS emotions (
+          date TEXT PRIMARY KEY NOT NULL,
+          humeur TEXT,
+          commentaire TEXT
+        );`
+      );
+    });
+    loadAllEmotions();
+  }, []);
+
+  // Charge toutes les émotions depuis la base
+  const loadAllEmotions = () => {
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        "SELECT * FROM emotions;",
+        [],
+        (_tx: any, resultSet: any) => {
+          const data: {
+            [key: string]: { humeur: string; commentaire: string };
+          } = {};
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            const row = resultSet.rows.item(i);
+            data[row.date] = {
+              humeur: row.humeur,
+              commentaire: row.commentaire,
+            };
+          }
+          setHistoriqueEmotions(data);
+        }
+      );
+    });
+  };
+
+  const saveEmotion = () => {
+    if (!selectedDate) return;
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        `INSERT OR REPLACE INTO emotions (date, humeur, commentaire) VALUES (?, ?, ?)`,
+        [selectedDate, humeur, commentaire],
+        () => {
+          setHistoriqueEmotions(
+            (prev: {
+              [key: string]: { humeur: string; commentaire: string };
+            }) => ({
+              ...prev,
+              [selectedDate]: { humeur, commentaire },
+            })
+          );
+          setHumeur("");
+          setCommentaire("");
+        },
+        (_tx: any, error: any) => {
+          console.log("Erreur lors de l'enregistrement :", error);
+          return false;
+        }
+      );
+    });
+  };
+
+  // Pré-remplit le formulaire si une émotion existe pour cette date
+  useEffect(() => {
+    if (selectedDate && historiqueEmotions[selectedDate]) {
+      setHumeur(historiqueEmotions[selectedDate].humeur);
+      setCommentaire(historiqueEmotions[selectedDate].commentaire);
+    } else {
       setHumeur("");
       setCommentaire("");
-      }}
-      />
-      </View>
-    );
-  }
+    }
+  }, [selectedDate, historiqueEmotions]);
 
   return (
     <ThemedView style={styles.titleContainer}>
       <ThemedText type="title">Calendrier</ThemedText>
       <Calendar
-        onDayPress={(day) => {
-          setselectedDate(day.dateString);
+        onDayPress={(day) => setSelectedDate(day.dateString)}
+        markedDates={{
+          ...Object.keys(historiqueEmotions).reduce((acc, date) => {
+            acc[date] = { marked: true, dotColor: "#f78da7" };
+            return acc;
+          }, {} as any),
+          ...(selectedDate
+            ? { [selectedDate]: { selected: true, selectedColor: "#f78da7" } }
+            : {}),
         }}
       />
-      <ThemedText>{selectedDate}</ThemedText>
-      {contenuFormulaire}
+      {selectedDate ? (
+        <View style={{ width: "100%", marginTop: 12 }}>
+          <TextInput
+            placeholder="Ton humeur du jour"
+            value={humeur}
+            onChangeText={setHumeur}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Indique un commentaire"
+            value={commentaire}
+            onChangeText={setCommentaire}
+            style={styles.input}
+          />
+          <Button title="Enregistrer" onPress={saveEmotion} color="#f78da7" />
+        </View>
+      ) : null}
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
   titleContainer: {
-    flex: 1, // aligner le titre Calendrier en haut et le centrer
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     paddingHorizontal: 16,
     paddingTop: 50,
-    gap: 8,
+  },
+  input: {
+    backgroundColor: "rgba(255,255,255,0.7)",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
   },
 });
+
+export default Calendrier;
