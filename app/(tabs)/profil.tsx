@@ -1,17 +1,18 @@
-
 import { ThemedText } from "@/components/ThemedText"; // il faut importer les éléments dont on a besoin sur notre page
 import { ThemedView } from "@/components/ThemedView";
 import { StyleSheet } from "react-native";
 
 export const screenOptions = {
   title: "Profil",
-}; 
+};
 
-export default function Profil() { // il faut exporter la fonction Profil pour qu'elle soit accessible dans l'application
-  return ( // il faut un retour de cette fonction avec le titre de la page
+export default function Profil() {
+  // il faut exporter la fonction Profil pour qu'elle soit accessible dans l'application
+  return (
+    // il faut un retour de cette fonction avec le titre de la page
     <ThemedView style={styles.titleContainer}>
-      <ThemedText type="title">Bienvenue dans votre profil !</ThemedText> 
-    </ThemedView> // 
+      <ThemedText type="title">Bienvenue dans votre profil !</ThemedText>
+    </ThemedView>
   );
 }
 
@@ -42,4 +43,3 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
-
