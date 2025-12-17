@@ -138,11 +138,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-export function Index() {
-  return (
-    <ThemedView>
-      <AnimatedTitle />
-    </ThemedView>
-  );
-}

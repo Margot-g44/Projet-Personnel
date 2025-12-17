@@ -1,17 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { openDatabase } from "expo-sqlite";
+import * as SQLite from "expo-sqlite";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, TextInput, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
-declare module "expo-sqlite" {
-  export function openDatabase(name: string): any;
-}
-
-const db = openDatabase("bienetre.db");
-
 const Calendrier = () => {
+  const db = SQLite.openDatabaseSync("bienetre.db");
   const [selectedDate, setSelectedDate] = useState("");
   const [humeur, setHumeur] = useState("");
   const [commentaire, setCommentaire] = useState("");
@@ -21,65 +16,55 @@ const Calendrier = () => {
 
   // Crée la table si elle n'existe pas
   useEffect(() => {
-    db.transaction((tx: any) => {
-      tx.executeSql(
+    try {
+      db.execSync(
         `CREATE TABLE IF NOT EXISTS emotions (
           date TEXT PRIMARY KEY NOT NULL,
           humeur TEXT,
           commentaire TEXT
         );`
       );
-    });
-    loadAllEmotions();
+      loadAllEmotions();
+    } catch (error) {
+      console.error("Erreur lors de la création de la table :", error);
+    }
   }, []);
 
   // Charge toutes les émotions depuis la base
   const loadAllEmotions = () => {
-    db.transaction((tx: any) => {
-      tx.executeSql(
-        "SELECT * FROM emotions;",
-        [],
-        (_tx: any, resultSet: any) => {
-          const data: {
-            [key: string]: { humeur: string; commentaire: string };
-          } = {};
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            const row = resultSet.rows.item(i);
-            data[row.date] = {
-              humeur: row.humeur,
-              commentaire: row.commentaire,
-            };
-          }
-          setHistoriqueEmotions(data);
-        }
-      );
-    });
+    try {
+      const result = db.getAllSync("SELECT * FROM emotions;");
+      const data: {
+        [key: string]: { humeur: string; commentaire: string };
+      } = {};
+      result.forEach((row: any) => {
+        data[row.date] = {
+          humeur: row.humeur,
+          commentaire: row.commentaire,
+        };
+      });
+      setHistoriqueEmotions(data);
+    } catch (error) {
+      console.error("Erreur lors du chargement des émotions :", error);
+    }
   };
 
   const saveEmotion = () => {
     if (!selectedDate) return;
-    db.transaction((tx: any) => {
-      tx.executeSql(
+    try {
+      db.runSync(
         `INSERT OR REPLACE INTO emotions (date, humeur, commentaire) VALUES (?, ?, ?)`,
-        [selectedDate, humeur, commentaire],
-        () => {
-          setHistoriqueEmotions(
-            (prev: {
-              [key: string]: { humeur: string; commentaire: string };
-            }) => ({
-              ...prev,
-              [selectedDate]: { humeur, commentaire },
-            })
-          );
-          setHumeur("");
-          setCommentaire("");
-        },
-        (_tx: any, error: any) => {
-          console.log("Erreur lors de l'enregistrement :", error);
-          return false;
-        }
+        [selectedDate, humeur, commentaire]
       );
-    });
+      setHistoriqueEmotions((prev) => ({
+        ...prev,
+        [selectedDate]: { humeur, commentaire },
+      }));
+      setHumeur("");
+      setCommentaire("");
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement :", error);
+    }
   };
 
   // Pré-remplit le formulaire si une émotion existe pour cette date
