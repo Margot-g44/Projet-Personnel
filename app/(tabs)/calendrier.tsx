@@ -6,7 +6,6 @@ import { Button, StyleSheet, TextInput, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
 const Calendrier = () => {
-  const db = SQLite.openDatabaseSync("bienetre.db");
   const [selectedDate, setSelectedDate] = useState("");
   const [humeur, setHumeur] = useState("");
   const [commentaire, setCommentaire] = useState("");
@@ -14,21 +13,7 @@ const Calendrier = () => {
     [key: string]: { humeur: string; commentaire: string };
   }>({});
 
-  // Crée la table si elle n'existe pas
-  useEffect(() => {
-    try {
-      db.execSync(
-        `CREATE TABLE IF NOT EXISTS emotions (
-          date TEXT PRIMARY KEY NOT NULL,
-          humeur TEXT,
-          commentaire TEXT
-        );`
-      );
-      loadAllEmotions();
-    } catch (error) {
-      console.error("Erreur lors de la création de la table :", error);
-    }
-  }, []);
+  const db = SQLite.openDatabaseSync("bienetre.db");
 
   // Charge toutes les émotions depuis la base
   const loadAllEmotions = () => {
@@ -48,6 +33,23 @@ const Calendrier = () => {
       console.error("Erreur lors du chargement des émotions :", error);
     }
   };
+
+  // Crée la table si elle n'existe pas
+  useEffect(() => {
+    try {
+      db.execSync(
+        `CREATE TABLE IF NOT EXISTS emotions (
+          date TEXT PRIMARY KEY NOT NULL,
+          humeur TEXT,
+          commentaire TEXT
+        );`
+      );
+      loadAllEmotions();
+    } catch (error) {
+      console.error("Erreur lors de la création de la table :", error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const saveEmotion = () => {
     if (!selectedDate) return;
